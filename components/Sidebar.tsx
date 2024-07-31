@@ -27,7 +27,6 @@ const Sidebar = () => {
                 height={24}
               />
               <p className='text-lg font-semibold max-lg:hidden'>{link.label}</p>
-
             </Link>
           )
         })}

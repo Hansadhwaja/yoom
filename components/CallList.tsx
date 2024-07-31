@@ -81,11 +81,11 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
 
     return (
         <div className='grid grid-cols-1 gap-5 xl:grid-cols-2'>
-            {calls && calls.length > 0 ? calls.map((meeting: Call | CallRecording) => (
+            {calls && calls.length > 0 ? calls.map((meeting: Call | CallRecording, index: Number) => (
                 <MeetingCard
-                    key={meeting.id}
+                    key={meeting.id || index}
                     icon={image}
-                    title={(meeting as Call).state?.custom?.description?.substring(0, 26) || meeting?.filename?.substring(0.20) || 'Personal Room'}
+                    title={(meeting as Call).state?.custom?.description?.substring(0, 26) || meeting?.filename?.substring(0,20) || 'Personal Room'}
                     date={meeting.state?.startsAt.toLocaleString() || meeting.start_time.toLocaleString()}
                     isPreviousMeeting={type === 'ended'}
                     buttonIcon1={type === 'recordings' ? '/icons/play.svg' : undefined}

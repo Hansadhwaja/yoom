@@ -5,13 +5,18 @@ import MeetingRoom from "@/components/MeetingRoom";
 import MeetingSetup from "@/components/MeetingSetup";
 import { useGetCallById } from "@/hooks/useGetCallById";
 import { useUser } from "@clerk/nextjs"
-import { StreamCall, StreamTheme } from "@stream-io/video-react-sdk";
+import { StreamCall, StreamTheme, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useState } from "react";
 
 const Meeting = ({ params: { id } }: { params: { id: string } }) => {
   const { user, isLoaded } = useUser();
+  const client = useStreamVideoClient();
+  const clientId=client?.streamClient.user?.id;
+  const userId=user?.id;
+
   const [isSetUpComplete, setIsSetUpComplete] = useState(false);
   const { call, isCallLoading } = useGetCallById(id);
+  const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${id}`
   if (!isLoaded || isCallLoading) return <Loader />;
 
   return (
@@ -22,7 +27,7 @@ const Meeting = ({ params: { id } }: { params: { id: string } }) => {
             (
               <MeetingSetup setIsSetUpComplete={setIsSetUpComplete} />
             ) : (
-              <MeetingRoom />
+              <MeetingRoom meetingLink={meetingLink} owner={clientId === userId} />
             )}
         </StreamTheme>
       </StreamCall>

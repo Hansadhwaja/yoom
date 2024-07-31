@@ -15,11 +15,14 @@ import { LayoutList, Users } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import EndCallButton from "./EndCallButton";
 import Loader from "./Loader";
+import { Button } from "./ui/button";
+import Image from "next/image";
+import { useToast } from "./ui/use-toast";
 
 
 type CallLayoutType = 'grid' | 'speaker-left' | 'speaker-right';
 
-const MeetingRoom = () => {
+const MeetingRoom = ({ meetingLink, owner }: { meetingLink: string, owner: boolean }) => {
   const searchParams = useSearchParams();
   const isPersonalRoom = !!searchParams.get('personal');
 
@@ -28,6 +31,7 @@ const MeetingRoom = () => {
   const { useCallCallingState } = useCallStateHooks();
   const callingState = useCallCallingState();
   const router = useRouter();
+  const { toast } = useToast();
 
   if (callingState !== CallingState.JOINED) return <Loader />
 
@@ -45,10 +49,10 @@ const MeetingRoom = () => {
   return (
     <section className='relative h-screen w-full overflow-hidden pt-4 text-white'>
       <div className='flex-center relative size-full'>
-        <div className='flex items-center size-full max-w-[1000px]'>
+        <div className='flex flex-col items-center size-full max-w-[1000px]'>
           <CallLayout />
         </div>
-        <div className={cn('h-[calc(100vh-86px)] hidden ml-2', { 'show-block': showParticipants })}>
+        <div className={cn('h-[calc(100vh-86px)] absolute sm:relative hidden ml-2', { 'show-block': showParticipants })}>
           <CallParticipantsList onClose={() => setShowParticipants(false)} />
         </div>
       </div>
@@ -81,7 +85,19 @@ const MeetingRoom = () => {
             <Users size={20} className="text-white" />
           </div>
         </button>
-        {!isPersonalRoom && <EndCallButton />}
+        <Button className="bg-dark-3" onClick={() => {
+          navigator.clipboard.writeText(meetingLink);
+          toast({
+            title: "Link Copied",
+          });
+        }}>  <Image
+            src="/icons/copy.svg"
+            alt="feature"
+            width={20}
+            height={20}
+          />
+          &nbsp;Copy Invitation</Button>
+        {!isPersonalRoom && owner && <EndCallButton />}
       </div>
     </section>
   )
